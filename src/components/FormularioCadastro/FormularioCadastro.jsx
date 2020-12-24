@@ -2,40 +2,67 @@ import React, { Component } from "react";
 import "./FormularioCadastro.css"
 
 class FormularioCadastro extends Component {
-    // Criamos um construtor
-    constructor(props){
-        // Chamamos o construtor da classe pai Component
+    
+    constructor(props) {
         super(props);
-        // Criamos um atributo para receber o valor do título
         this.titulo = "";
         this.texto = "";
+        this.categoria = "Sem categoria";
+        this.state = {categorias:[]};
+
+        this._novasCategorias = this._novasCategorias.bind(this);
     }
 
-    // Criamos um método para pegar cada mudança que ocorrer no título
-    _handleMudancaTitulo(evento){
+    componentDidMount(){
+        this.props.categorias.inscrever(this._novasCategorias);
+    }
+    
+    componentWillUnmount(){
+        this.props.categorias.desinscrever(this._novasCategorias);
+    }
+
+    _novasCategorias(categorias){
+        this.setState({...this.state, categorias});
+    }
+
+    _handleMudancaTitulo(evento) {
         evento.stopPropagation();
-        // titulo recebe o valor inserido no campo
         this.titulo = evento.target.value;
     }
 
-    // Criamos um método para pegar cada mudança que ocorrer na textarea
-    _handleMudancaTexto(evento){
+    _handleMudancaTexto(evento) {
         evento.stopPropagation();
-        // titulo recebe o valor inserido no campo
         this.texto = evento.target.value;
     }
 
-    _criarNota(evento){
+    _handleMudancaCategoria(evento) {
+        evento.stopPropagation();
+        this.categoria = evento.target.value;
+    }
+
+    _criarNota(evento) {
         evento.preventDefault();
         evento.stopPropagation();
-        this.props.criarNota(this.titulo, this.texto);
+        this.props.criarNota(this.titulo, this.texto, this.categoria);
     }
 
     render() {
         return (
-            <form className="form-cadastro "
+            <form
+                className="form-cadastro "
                 onSubmit={this._criarNota.bind(this)}
             >
+                <select
+                    onChange={this._handleMudancaCategoria.bind(this)}
+                    className="form-cadastro_input"
+                >
+                    <option>Sem categoria</option>
+                    {this.state.categorias.map((categoria, index) => {
+                        return (
+                            <option key={index}>{categoria}</option>
+                        )
+                    })}
+                </select>
                 <input
                     type="text"
                     placeholder="Título"

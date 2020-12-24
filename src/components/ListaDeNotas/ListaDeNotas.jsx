@@ -2,27 +2,41 @@ import React, { Component } from "react";
 import CardNota from "../CardNota";
 import "./ListaDeNotas.css"
 
-// Exportamos a classe como padrão
 class ListaDeNotas extends Component {
-    // Não é necessário criar um construtor só para receber as props. Se não declara-lo
-    // o JavaScript traz as props por padrão.
+    constructor(){
+        super();
+        this.state = {notas:[]};
 
-    // Usamos o método render() para renderizar nosso código jsx como HTML
+        this._novasNotas = this._novasNotas.bind(this);
+    }
+
+    componentDidMount(){
+        this.props.notas.inscrever(this._novasNotas);
+    }
+
+    componentWillUnmount(){
+        this.props.notas.desinscrever(this._novasNotas);
+    }
+
+    _novasNotas(notas){
+        this.setState({...this.state, notas})
+    }
+
     render() {
-        // Temos que retornar o código jsx para que ele entenda o que deve renderizar
         return (
             <ul className="lista-notas">
                 {
-                    // Criamos um array com as categorias de cada nota
-                    // Usamos a função map para iterar em cada item do array e realizar uma ação
-                    // A ação é renderizar uma li com a categoria do array
-                    // Array.of("Trabalho", "Trabalho", "Estudos")
-                    // Agora usamos as props para fazer o mapeamento
-                    this.props.notas
+                    this.state.notas
                         .map((nota, index) => {
                             return (
                                 <li className="lista-notas_item" key={index}>
-                                    <CardNota titulo={nota.titulo} texto={nota.texto}/>
+                                    <CardNota 
+                                    indice={index}
+                                    apagarNota={this.props.apagarNota}
+                                    titulo={nota.titulo} 
+                                    texto={nota.texto}
+                                    categoria={nota.categoria}
+                                    />
                                 </li>
                             )
                         })
